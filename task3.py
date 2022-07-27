@@ -1,3 +1,6 @@
+import time
+
+
 def findSmallest(arr):  # Способ 1
     smallest = arr[0]
     smallest_index = 0
@@ -14,6 +17,7 @@ def sort1(arr):
     for i in range(len(arr)):
         smallest = findSmallest(arr)
         newArr.append(arr.pop(smallest))
+
     return newArr
 
 
@@ -22,7 +26,6 @@ def sort2(arr):  # Способ 2
     less = []
     equal = []
     greater = []
-
     if len(arr) > 1:
         pivot = arr[0]
         for x in arr:
@@ -32,42 +35,50 @@ def sort2(arr):  # Способ 2
                 equal.append(x)
             if x > pivot:
                 greater.append(x)
+
         return sort2(less) + equal + sort2(greater)
     else:
         return arr
 
 
-def partition(array, begin, end):
-    pivot = begin
-    for i in range(begin + 1, end + 1):
-        if array[i] <= array[begin]:
-            pivot += 1
-            array[i], array[pivot] = array[pivot], array[i]
-    array[pivot], array[begin] = array[begin], array[pivot]
-    return pivot
-
-
 @profile
-def sort3(arr, begin=0, end=None):  # Способ 3
-    if end is None:
-        end = len(arr) - 1
+def sort3(arr):  # Способ 3
+    def _quicksort(arr, low, high):
+        if low < high:
+            p = partition(arr, low, high)
+            _quicksort(arr, low, p)
+            _quicksort(arr, p + 1, high)
 
-    def _quicksort(arr, begin, end):
-        if begin >= end:
-            return
-        pivot = partition(arr, begin, end)
-        _quicksort(arr, begin, pivot - 1)
-        _quicksort(arr, pivot + 1, end)
+    def partition(arr, low, high):
+        pivot = arr[low]
+        while True:
+            while arr[low] < pivot:
+                low += 1
+            while arr[high] > pivot:
+                high -= 1
+            if low >= high:
+                return high
+            arr[low], arr[high] = arr[high], arr[low]
+            low += 1
+            high -= 1
 
-    return _quicksort(arr, begin, end)
+    _quicksort(arr, 0, len(arr) - 1)
+    return arr
 
 
 if __name__ == "__main__":
-    sort1([5, 3, 6, 2, 10, 3, 6, 2, 10, 3, 6, 2, 10, 3, 6, 2, 10, 3, 6, 2, 10, 3, 6, 2, 10])  # Способ 1
-    sort2([5, 3, 6, 2, 10, 3, 6, 2, 10, 3, 6, 2, 10, 3, 6, 2, 10, 3, 6, 2, 10, 3, 6, 2, 10])  # Способ 2
-    sort3([5, 3, 6, 2, 10, 3, 6, 2, 10, 3, 6, 2, 10, 3, 6, 2, 10, 3, 6, 2, 10, 3, 6, 2, 10])  # Способ 3
+    # Не упорядоченный список
+    print(sort1([5, 3, 6, 2, 10, 3, 6, 2, 10, 3, 6, 2, 10, 3, 6, 2, 10, 3, 6, 2, 10, 3, 6, 2, 10]))  # Способ 1
+    print(sort2([5, 3, 6, 2, 10, 3, 6, 2, 10, 3, 6, 2, 10, 3, 6, 2, 10, 3, 6, 2, 10, 3, 6, 2, 10]))  # Способ 2
+    print(sort3([5, 3, 6, 2, 10, 3, 6, 2, 10, 3, 6, 2, 10, 3, 6, 2, 10, 3, 6, 2, 10, 3, 6, 2, 10]))  # Способ 3
+    # Упорядоченный список
+    print(
+        sort1([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25]))  # Способ 1
+    print(
+        sort2([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25]))  # Способ 2
+    print(
+        sort3([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25]))  # Способ 3
 
 # При проверке файла  kernprof -l -v task3.py
-# Если мы разберем данные три способа сортировки, то можно отметить, что наименьшее время выполнение функции у третьего
-# способа, но, если рассмотреть с точки зрения работы каждой функции, можно обратить внимание, что среднее время
-# выполнения каждой строки у способа номер  два будет ниже.
+# Если мы разберем данные три способа сортировки, то можно отметить, что время выполнение функции у второго способа на порядок выше,
+# тем временем у первого и второго незначительно отличаются.

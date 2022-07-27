@@ -1,57 +1,53 @@
 import collections
-import time
-from datetime import datetime
-
-start_time = time.time()
 
 
-class FirstExampleBuffer:  # Данный метод при использовании библиотеки collections позволят указать
+class FirstExampleBuffer:  # Данный класс при использовании библиотеки collections позволят указать
     # максимальное количество символов в буфере тем самым,
     # если количество символов меньше указанного нами новый символ будет добавлен и ничего не удалится,
     # что и подразумивает циклический буфер.
-    def __init__(self, len, numb, list):
-        self.len = len
-        self.numb = numb
-        self.list = list
+    # Плюсы - удобство, компактный код
+    # Минусы -  привлечение стороенней библиотеки
+    def __init__(self, len):
+        self.deque = collections.deque(maxlen=len)
+        self.list = []
 
-    def example(self):
-        result = collections.deque(maxlen=self.len)
-        result.extend(self.list)
-        result.append(self.numb)
-        print(result)
-        print(time.time() - start_time)
+    def add(self, numb):
+        self.deque.extend(self.list)
+        self.deque.append(numb)
 
-
-start_time = time.time()
+    def get(self):
+        if self.deque:
+            return self.deque.pop()
+        else:
+            return "Очередь пуста"
 
 
 class SecondExampleBuffer:  # Данный метод при использовании if\else позволят указать максимальное количество символов
     # в буфере, тем самым,если количество символов меньше указанного нами
     # максимального колчичества новый символ будет добавлен и ничего не удалится,
-    # что и подразумевает циклический буфер. Данный способ занимает больше
-    # строк кода при одинаковой скорости выполнения.
-    def __init__(self, len, numb, list):
-        self.numb = numb
+    # что и подразумевает циклический буфер.
+    # Плюсы - Не использует сторонние библиотеки
+    # Минусы - Данный способ занимает больше строк кода при одинаковой скорости выполнения.
+    def __init__(self, len):
         self.len = len
-        self.list = list
+        self.list = []
 
-    def example(self):
+    def add(self, numb):
         list_len = len(self.list)
-        if list_len == self.len:
-            self.list.append(self.numb)
+        if list_len >= self.len:
             self.list.pop(0)
+            self.list.append(numb)
         else:
-            self.list.append(self.numb)
+            self.list.append(numb)
 
-        print(self.list)
-        print(time.time() - start_time)
+        return self.list
+
+    def get(self):
+        if len(self.list) > 0:
+            return self.list.pop(-1)
+        else:
+            return "Очередь пуста"
 
 
-first = FirstExampleBuffer(7, 145,
-                           [25, 4, 5, 123, 9, 33, 4, 5, 123, 9, 33, 4, 5, 123, 9, 33, 4, 5, 123, 9, 33, 4, 5, 123, 9,
-                            33, 4, 5, 123, 9, 33, 4, 5, 123, 9, 33])
-second = SecondExampleBuffer(100, 12,
-                             [12, 2, 7, 8, 16, 4, 5, 123, 9, 33, 4, 5, 123, 9, 33, 4, 5, 123, 9, 33, 4, 5, 123, 9, 33,
-                              4, 5, 123, 9, 33, 4, 5, 123, 9, 33])
-first.example()
-second.example()
+if __name__ == '__main__':
+    pass
